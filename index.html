@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Milemarkers</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0f0f11; --surface: #1a1a1f; --surface2: #222228;
+      --border: #2e2e38; --text: #e8e8ed; --text-dim: #7a7a8a;
+      --accent: #7c6af7; --accent-dim: rgba(124,106,247,0.15);
+      --blue: #60a5fa; --green: #4ade80; --amber: #fbbf24;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; min-height: 100vh; }
+    header { position: sticky; top: 0; z-index: 100; background: rgba(15,15,17,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+    .logo-mark { width: 28px; height: 28px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .project-badge { font-size: 12px; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; }
+    .container { max-width: 720px; margin: 0 auto; padding: 48px 24px 120px; }
+    .page-title { margin-bottom: 40px; }
+    .page-title h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .page-title p { color: var(--text-dim); font-size: 14px; }
+    .stats { display: flex; gap: 24px; margin-bottom: 40px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    .stat { display: flex; flex-direction: column; gap: 2px; }
+    .stat-value { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; }
+    .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-divider { width: 1px; background: var(--border); }
+    .timeline { position: relative; }
+    .timeline::before { content: ''; position: absolute; left: 19px; top: 0; bottom: 0; width: 1px; background: var(--border); }
+    .milestone { position: relative; padding-left: 56px; margin-bottom: 4px; }
+    .milestone-dot { position: absolute; left: 10px; top: 18px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; z-index: 1; }
+    .milestone.flagged .milestone-dot { background: var(--accent-dim); border-color: var(--accent); }
+    .milestone-dot-inner { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); }
+    .milestone.flagged .milestone-dot-inner { background: var(--accent); }
+    .milestone-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+    .milestone-card:hover { border-color: #3e3e50; background: var(--surface2); }
+    .milestone.flagged .milestone-card { border-color: rgba(124,106,247,0.3); }
+    .milestone-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .milestone-title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+    .milestone-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .milestone-date { font-size: 11px; color: var(--text-dim); }
+    .type-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .type-conversation { background: rgba(96,165,250,0.15); color: var(--blue); }
+    .type-code { background: rgba(74,222,128,0.15); color: var(--green); }
+    .type-design { background: rgba(251,191,36,0.15); color: var(--amber); }
+    .milestone-summary { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .milestone-tags { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+    .tag { font-size: 11px; color: var(--text-dim); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; }
+    .month-divider { padding-left: 56px; margin-bottom: 20px; margin-top: 12px; }
+    .month-label { font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    .add-btn { position: fixed; bottom: 32px; right: 32px; background: var(--accent); color: white; border: none; border-radius: 12px; padding: 12px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(124,106,247,0.4); transition: all 0.15s; }
+    .add-btn:hover { transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo"><div class="logo-mark">⬡</div> Milemarkers</div>
+  <span class="project-badge">milemarkers</span>
+</header>
+<div class="container">
+  <div class="page-title">
+    <h1>Iteration Log</h1>
+    <p>A visual record of how your work has evolved.</p>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="timeline" id="timeline"></div>
+</div>
+<button class="add-btn">+ Add Milestone</button>
+<script>
+  const data = {
+    "project": "milemarkers",
+    "milestones": [
+      {
+        "id": "001",
+        "date": "2026-02-27",
+        "title": "Project kickoff",
+        "type": "conversation",
+        "tags": ["planning", "milestone"],
+        "summary": "Initial conversation defining the concept for Milemarkers—a visual iteration log for AI workflows. Decided on vertical feed layout, manual milestone flagging, and GitHub as the source of truth.",
+        "flagged": true
+      }
+    ]
+  };
+  function formatDate(d) { return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+  function renderStats() {
+    const m = data.milestones;
+    document.getElementById('stats').innerHTML = `
+      <div class="stat"><span class="stat-value">${m.length}</span><span class="stat-label">Milestones</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-value">${m.filter(x=>x.flagged).length}</span><span class="stat-label">Flagged</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-value">${[...new Set(m.map(x=>x.type))].length}</span><span class="stat-label">Types</span></div>`;
+  }
+  function renderTimeline() {
+    const sorted = [...data.milestones].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    document.getElementById('timeline').innerHTML = sorted.map(m=>`
+      <div class="milestone ${m.flagged?'flagged':''}">
+        <div class="milestone-dot"><div class="milestone-dot-inner"></div></div>
+        <div class="milestone-card">
+          <div class="milestone-header">
+            <span class="milestone-title">${m.flagged?'🚩 ':''}${m.title}</span>
+            <div class="milestone-meta">
+              <span class="milestone-date">${formatDate(m.date)}</span>
+              <span class="type-badge type-${m.type}">${m.type}</span>
+            </div>
+          </div>
+          <p class="milestone-summary">${m.summary}</p>
+          ${m.tags?.length?`<div class="milestone-tags">${m.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}
+        </div>
+      </div>`).join('');
+  }
+  renderStats(); renderTimeline();
+</script>
+</body>
+</html>
