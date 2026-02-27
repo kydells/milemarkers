@@ -12,5 +12,16 @@
       "artifacts": [],
       "flagged": true
     }
+    {
+  "id": "002",
+  "date": "2026-02-27",
+  "title": "Added a working milestone button",
+  "type": "conversation",
+  "tags": [
+    "pebble"
+  ],
+  "summary": "Added a working milestone button",
+  "flagged": false
+}
   ]
 }
