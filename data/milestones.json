@@ -1,0 +1,16 @@
+{
+  "project": "milemarkers",
+  "description": "A visual timeline of my AI workflow iterations",
+  "milestones": [
+    {
+      "id": "001",
+      "date": "2026-02-27",
+      "title": "Project kickoff",
+      "type": "conversation",
+      "tags": ["planning", "milestone"],
+      "summary": "Initial conversation defining the concept for Milemarkers—a visual iteration log for AI workflows.",
+      "artifacts": [],
+      "flagged": true
+    }
+  ]
+}
