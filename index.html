@@ -200,4 +200,77 @@
           <div class="milestone ${m.flagged?'flagged':''}">
             <div class="milestone-dot"><div class="milestone-dot-inner"></div></div>
             <div class="milestone-card">
-              <div class="milestone-header
+              <div class="milestone-header">
+                <span class="milestone-title">${m.flagged?'🚩 ':''}${m.title}</span>
+                <div class="milestone-meta">
+                  <span class="milestone-date">${formatDate(m.date)}</span>
+                  <span class="type-badge type-${m.type}">${m.type}</span>
+                </div>
+              </div>
+              <p class="milestone-summary">${m.summary}</p>
+              ${m.tags?.length?`<div class="milestone-tags">${m.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}
+            </div>
+          </div>`;
+      });
+    }
+    document.getElementById('timeline').innerHTML = html;
+  }
+
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('jsonBox').classList.remove('visible');
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-summary').value = '';
+    document.getElementById('f-tags').value = '';
+    document.getElementById('f-flagged').checked = false;
+    document.getElementById('f-type').value = 'conversation';
+    setTimeout(() => document.getElementById('f-title').focus(), 50);
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  function addMilestone() {
+    const title = document.getElementById('f-title').value.trim();
+    const summary = document.getElementById('f-summary').value.trim();
+    if (!title) { document.getElementById('f-title').focus(); return; }
+
+    const tags = document.getElementById('f-tags').value
+      .split(',').map(t=>t.trim()).filter(Boolean);
+
+    const milestone = {
+      id: String(data.milestones.length + 1).padStart(3,'0'),
+      date: today(),
+      title,
+      type: document.getElementById('f-type').value,
+      tags,
+      summary: summary || title,
+      flagged: document.getElementById('f-flagged').checked
+    };
+
+    data.milestones.push(milestone);
+    renderStats();
+    renderTimeline();
+
+    // Show JSON to copy
+    const jsonStr = JSON.stringify(milestone, null, 2);
+    document.getElementById('jsonContent').textContent = jsonStr;
+    document.getElementById('jsonBox').classList.add('visible');
+  }
+
+  function copyJSON() {
+    navigator.clipboard.writeText(document.getElementById('jsonContent').textContent);
+    document.querySelector('.copy-btn').textContent = 'Copied!';
+    setTimeout(() => document.querySelector('.copy-btn').textContent = 'Copy JSON', 2000);
+  }
+
+  renderStats();
+  renderTimeline();
+</script>
+</body>
+</html>
